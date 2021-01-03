@@ -28,7 +28,7 @@ public class InitializeGoliathSystem : SystemBase
                 buildMeshData.freePolygons[counter] = i;
                 counter++;
             }
-           // EntityManager.SetComponentData(entity, buildMeshData);
+            entityCommandBuffer.SetComponent(entity, buildMeshData);
             entityCommandBuffer.RemoveComponent(entity, typeof(UninitializedGoliathTag));
             entityCommandBuffer.AddComponent(entity, typeof(ConstructingGoliathTag));
         })
