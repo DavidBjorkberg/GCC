@@ -1,7 +1,8 @@
 using Unity.Entities;
 using UnityEngine;
 [GenerateAuthoringComponent]
-public class ConstructData : IComponentData
+public struct ConstructData : IComponentData
 {
-    public bool isCompleted;
+    internal int nrOfRobotSlots;
+    internal int currentNrOfAttachedRobots;
 }

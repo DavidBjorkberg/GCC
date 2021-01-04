@@ -6,31 +6,30 @@ using UnityEngine;
 
 public class InitializeGoliathSystem : SystemBase
 {
-    public EntityCommandBuffer entityCommandBuffer;
-    public EntityCommandBufferSystem commandBufferSystem;
+    BeginInitializationEntityCommandBufferSystem commandBufferSystem;
     protected override void OnCreate()
     {
         base.OnCreate();
-        commandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+        commandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
     }
     protected override void OnUpdate()
     {
-        entityCommandBuffer = commandBufferSystem.CreateCommandBuffer();
+        var commandBuffer = commandBufferSystem.CreateCommandBuffer();
         Entities.
             WithAll<UninitializedGoliathTag>()
-            .ForEach((Entity entity, BuildMeshData buildMeshData) =>
+            .ForEach((Entity entity, BuildMeshData buildMeshData, ref ConstructData constructData) =>
         {
-            int counter = 0;
             int nrOfPolygons = GetTotalNrOfPolygons(buildMeshData.buildMesh);
             buildMeshData.freePolygons = new int[nrOfPolygons];
-            for (int i = nrOfPolygons - 1; i >= 0; i--)
+            for (int i = 0; i < nrOfPolygons; i++)
             {
-                buildMeshData.freePolygons[counter] = i;
-                counter++;
+                buildMeshData.freePolygons[i] = i;
             }
-            entityCommandBuffer.SetComponent(entity, buildMeshData);
-            entityCommandBuffer.RemoveComponent(entity, typeof(UninitializedGoliathTag));
-            entityCommandBuffer.AddComponent(entity, typeof(ConstructingGoliathTag));
+            constructData.nrOfRobotSlots = nrOfPolygons;
+            commandBuffer.SetComponent(entity, buildMeshData);
+            commandBuffer.SetComponent(entity, constructData);
+            commandBuffer.RemoveComponent(entity, typeof(UninitializedGoliathTag));
+            commandBuffer.AddComponent(entity, typeof(ConstructingGoliathTag));
         })
             .WithoutBurst()
             .Run();

@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 603485136}
   - component: {fileID: 4171031911823593638}
   - component: {fileID: 7348226539256418013}
-  - component: {fileID: -3393837926071857943}
+  - component: {fileID: -8641612798940769433}
   m_Layer: 0
-  m_Name: Goliath
+  m_Name: Goliath 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5673463aa05feee4baafc32e295a7a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildMesh: {fileID: 4068373912626513877, guid: 3f3619e31032dbc4e8d8b5af1e615f58, type: 3}
+  buildMesh: {fileID: 4068373912626513877, guid: c8999ac4367abcd41971899b89bbae2b, type: 3}
 --- !u!114 &7348226539256418013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ced23cee68e0f44a98d75d32c42ac3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-3393837926071857943
+--- !u!114 &-8641612798940769433
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

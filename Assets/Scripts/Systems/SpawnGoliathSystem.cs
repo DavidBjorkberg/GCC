@@ -2,7 +2,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-
+using UnityEngine;
 public class SpawnGoliathSystem : SystemBase
 {
     BeginInitializationEntityCommandBufferSystem m_EntityCommandBufferSystem;
@@ -20,10 +20,9 @@ public class SpawnGoliathSystem : SystemBase
         {
             if (spawnGoliathData.nrOfSpawnedGoliaths < spawnGoliathData.nrOfGoliathsToSpawn)
             {
-                var instance = commandBuffer.Instantiate(entityInQueryIndex, spawnGoliathData.goliathPrefab);
+                Entity instance = commandBuffer.Instantiate(entityInQueryIndex, spawnGoliathData.goliathPrefab);
 
-                var position = math.transform(float4x4.identity,
-                                            new float3(0, 0, 0));
+                var position = new Vector3(spawnGoliathData.nrOfSpawnedGoliaths * 5, 0, 0);
                 commandBuffer.SetComponent(entityInQueryIndex, instance, new Translation { Value = position });
                 spawnGoliathData.nrOfSpawnedGoliaths++;
             }

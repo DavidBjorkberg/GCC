@@ -3,8 +3,10 @@ using UnityEngine;
 [GenerateAuthoringComponent]
 public struct SpawnRobotData : IComponentData
 {
+    public Entity robotPrefab;
     public int minSpawnDistance;
     public int maxSpawnDistance;
-    internal int nrOfAliveRobots;
-    public Entity robotPrefab;
+    public float spawnCooldown;
+    internal float spawnTimer;
+    public int nrOfAliveRobots;
 }

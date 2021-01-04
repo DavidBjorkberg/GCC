@@ -1,5 +1,5 @@
 using Unity.Entities;
 [GenerateAuthoringComponent]
-public struct ConstructingGoliathTag : IComponentData
+public struct CompletedGoliathTag : IComponentData
 {
 }
