@@ -11,7 +11,6 @@ public class SpawnRobotsSystem : SystemBase
     {
         m_EntityCommandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
     }
-
     protected override void OnUpdate()
     {
         var commandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer();
@@ -30,10 +29,11 @@ public class SpawnRobotsSystem : SystemBase
             {
                 Vector3 spawnPos = CalculateSpawnPos(spawnRobotData, trans.Value);
                 Entity instance = SpawnRobot(ref spawnRobotData, commandBuffer);
-                InitialiseRobot(instance, entity, spawnPos, trans.Value, buildMeshData, commandBuffer);
 
-                commandBuffer.RemoveComponent(instance, typeof(UninitializedRobotTag));
-                commandBuffer.AddComponent(instance, typeof(FlyingRobotTag));
+                ParentGoliathData goliathData;
+                goliathData.goliath = entity;
+                commandBuffer.SetComponent(instance, goliathData);
+                commandBuffer.SetComponent(instance, new Translation { Value = spawnPos });
             }
         })
             .WithoutBurst()
@@ -47,25 +47,6 @@ public class SpawnRobotsSystem : SystemBase
         spawnRobotData.nrOfAliveRobots++;
         spawnRobotData.spawnTimer = spawnRobotData.spawnCooldown;
         return instance;
-    }
-    void InitialiseRobot(Entity instance, Entity goliath, float3 spawnPos, float3 goliathPos, BuildMeshData buildMeshData, EntityCommandBuffer commandBuffer)
-    {
-        RobotMovementData robotMovementData;
-        robotMovementData.lerpValue = 0;
-        robotMovementData.startPos = spawnPos;
-        robotMovementData.claimedPolygon = GetAndClaimNextFreePolygon(buildMeshData.freePolygons);
-        robotMovementData.targetNormal = GetNormalOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
-        robotMovementData.target = goliathPos + GetCenterOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
-        robotMovementData.movementSpeed = 5;
-
-        ParentGoliathData parentGoliathData;
-        parentGoliathData.goliath = goliath;
-
-        commandBuffer.SetComponent(instance, new Translation { Value = spawnPos });
-        commandBuffer.AddComponent(instance, new Parent { Value = goliath });
-        commandBuffer.AddComponent(instance, new LocalToParent { });
-        commandBuffer.SetComponent(instance, robotMovementData);
-        commandBuffer.SetComponent(instance, parentGoliathData);
     }
     float3 CalculateSpawnPos(SpawnRobotData spawnRobotData, Vector3 goliathPos)
     {
@@ -106,12 +87,12 @@ public class SpawnRobotsSystem : SystemBase
         Vector3 centerPos = Vector3.zero;
 
         index *= 6;
-        centerPos += vertices[triangles[index]] * 100;
-        centerPos += vertices[triangles[index + 1]] * 100;
-        centerPos += vertices[triangles[index + 2]] * 100;
-        centerPos += vertices[triangles[index + 3]] * 100;
-        centerPos += vertices[triangles[index + 4]] * 100;
-        centerPos += vertices[triangles[index + 5]] * 100;
+        centerPos += vertices[triangles[index]];
+        centerPos += vertices[triangles[index + 1]];
+        centerPos += vertices[triangles[index + 2]];
+        centerPos += vertices[triangles[index + 3]];
+        centerPos += vertices[triangles[index + 4]];
+        centerPos += vertices[triangles[index + 5]];
         centerPos /= 6;
         return centerPos;
     }

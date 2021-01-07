@@ -3,9 +3,11 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Experimental.AI;
 
 public class InitializeGoliathSystem : SystemBase
 {
+
     BeginInitializationEntityCommandBufferSystem commandBufferSystem;
     protected override void OnCreate()
     {
@@ -17,7 +19,7 @@ public class InitializeGoliathSystem : SystemBase
         var commandBuffer = commandBufferSystem.CreateCommandBuffer();
         Entities.
             WithAll<UninitializedGoliathTag>()
-            .ForEach((Entity entity, BuildMeshData buildMeshData, ref ConstructData constructData) =>
+            .ForEach((Entity entity, BuildMeshData buildMeshData, AttachedRobotsData attachedRobotsData, ref ConstructData constructData) =>
         {
             int nrOfPolygons = GetTotalNrOfPolygons(buildMeshData.buildMesh);
             buildMeshData.freePolygons = new int[nrOfPolygons];
@@ -26,8 +28,12 @@ public class InitializeGoliathSystem : SystemBase
                 buildMeshData.freePolygons[i] = i;
             }
             constructData.nrOfRobotSlots = nrOfPolygons;
+            attachedRobotsData.attachedRobots = new Entity[nrOfPolygons];
+                
+
             commandBuffer.SetComponent(entity, buildMeshData);
             commandBuffer.SetComponent(entity, constructData);
+            commandBuffer.SetComponent(entity, attachedRobotsData);
             commandBuffer.RemoveComponent(entity, typeof(UninitializedGoliathTag));
             commandBuffer.AddComponent(entity, typeof(ConstructingGoliathTag));
         })

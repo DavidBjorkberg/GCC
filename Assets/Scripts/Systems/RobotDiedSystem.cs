@@ -26,7 +26,6 @@ public class RobotDiedSystem : SystemBase
                 BuildMeshData buildMeshData = EntityManager.GetComponentData<BuildMeshData>(parentGoliathData.goliath);
                 buildMeshData.freePolygons[robotDeathData.claimedPolygon] = robotDeathData.claimedPolygon;
                 EntityManager.SetComponentData(parentGoliathData.goliath, buildMeshData);
-
                 commandBuffer.DestroyEntity(entity);
             })
             .WithoutBurst()

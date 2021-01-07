@@ -2,11 +2,11 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Rendering;
 using UnityEngine;
 
 public class InitializeRobotSystem : SystemBase
 {
-    public EntityCommandBuffer entityCommandBuffer;
     public EntityCommandBufferSystem commandBufferSystem;
     protected override void OnCreate()
     {
@@ -15,57 +15,69 @@ public class InitializeRobotSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-        entityCommandBuffer = commandBufferSystem.CreateCommandBuffer();
+        var commandBuffer = commandBufferSystem.CreateCommandBuffer();
 
         Entities.
             WithAll<UninitializedRobotTag>().
-            ForEach((Entity entity, BuildMeshData buildMeshData,ref RobotMovementData robotMovementData, in Translation trans) =>
+            ForEach((Entity entity, RobotMeshData meshData, ref RobotMovementData robotMovementData, in Translation trans, in ParentGoliathData goliathData) =>
         {
+            BuildMeshData buildMeshData = EntityManager.GetComponentObject<BuildMeshData>(goliathData.goliath);
             robotMovementData.lerpValue = 0;
             robotMovementData.startPos = trans.Value;
             robotMovementData.claimedPolygon = GetAndClaimNextFreePolygon(buildMeshData.freePolygons);
             robotMovementData.targetNormal = GetNormalOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
-            robotMovementData.target = GetCenterOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
-            EntityManager.SetComponentData(entity, robotMovementData);
-            entityCommandBuffer.RemoveComponent(entity, typeof(UninitializedRobotTag));
-            entityCommandBuffer.AddComponent(entity, typeof(FlyingRobotTag));
+            float3 goliathPos = EntityManager.GetComponentData<Translation>(goliathData.goliath).Value;
+            robotMovementData.target = goliathPos + GetCenterOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
+            robotMovementData.movementSpeed = 5;
+
+            meshData.renderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
+
+            commandBuffer.SetComponent(entity, meshData);
+            commandBuffer.AddComponent(entity, new Parent { Value = goliathData.goliath });
+            commandBuffer.AddComponent(entity, new LocalToParent { });
+            commandBuffer.SetComponent(entity, robotMovementData);
+
+            commandBuffer.RemoveComponent(entity, typeof(UninitializedRobotTag));
+            commandBuffer.AddComponent(entity, typeof(FlyingRobotTag));
 
         })
             .WithoutBurst()
             .Run();
     }
-    public Vector3 GetNormalOfPolygon(int index, Mesh buildMesh)
+    public float3 GetNormalOfPolygon(int index, Mesh buildMesh)
     {
-        return buildMesh.normals[index * 4];
+        Vector3[] normals = buildMesh.normals;
+        int[] triangles = buildMesh.triangles;
+
+        return normals[triangles[index * 6]];
     }
     public int GetAndClaimNextFreePolygon(int[] freePolygons)
     {
-        for (int i = freePolygons.Length - 1; i >= 0; i--)
+        for (int i = 0; i < freePolygons.Length; i++)
         {
             if (freePolygons[i] != -1)
             {
-                int freePolygonIndex = freePolygons[i];
                 freePolygons[i] = -1;
-                return freePolygonIndex;
+                return i;
             }
         }
         Debug.Log("Couldn't find free polygon");
         return -1;
     }
-    public Vector3 GetCenterOfPolygon(int index, Mesh buildMesh)
+    public float3 GetCenterOfPolygon(int index, Mesh buildMesh)
     {
         Vector3[] vertices = buildMesh.vertices;
         int[] triangles = buildMesh.triangles;
-        Vector3 centerPos = Vector3.zero;
+        Vector3 centerPos = new Vector3(0, 0, 0);
 
         index *= 6;
-        centerPos += vertices[triangles[index]] * 100;
-        centerPos += vertices[triangles[index + 1]] * 100;
-        centerPos += vertices[triangles[index + 2]] * 100;
-        centerPos += vertices[triangles[index + 3]] * 100;
-        centerPos += vertices[triangles[index + 4]] * 100;
-        centerPos += vertices[triangles[index + 5]] * 100;
-        centerPos /= 6;
+        centerPos += vertices[triangles[index]];
+        centerPos += vertices[triangles[index + 1]];
+        centerPos += vertices[triangles[index + 2]];
+        centerPos += vertices[triangles[index + 3]];
+        centerPos += vertices[triangles[index + 4]];
+        centerPos += vertices[triangles[index + 5]];
+        centerPos /= 6.0f;
         return centerPos;
     }
 }
