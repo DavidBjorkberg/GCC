@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 4171031911823593638}
   - component: {fileID: 7348226539256418013}
   - component: {fileID: -8641612798940769433}
-  - component: {fileID: 7525812075655236840}
   - component: {fileID: 2478771225635611345}
   m_Layer: 0
   m_Name: Goliath 2
@@ -52,7 +51,6 @@ MonoBehaviour:
   minSpawnDistance: 2
   maxSpawnDistance: 10
   spawnCooldown: 0.1
-  nrOfAliveRobots: 0
 --- !u!114 &4171031911823593638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,18 +86,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ddc6473323a07394c9bf3d6655a5b50e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &7525812075655236840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 41458730143225436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97f83ed61510f6a49aa68d6f21220780, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &2478771225635611345

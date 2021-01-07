@@ -33,10 +33,8 @@ public class RobotMovementSystem : SystemBase
                 ConstructData constructData = EntityManager.GetComponentData<ConstructData>(parentGoliathData.goliath);
                 constructData.currentNrOfAttachedRobots++;
 
-                AttachedRobotsData attachedRobotsData = EntityManager.GetComponentObject<AttachedRobotsData>(parentGoliathData.goliath);
-                attachedRobotsData.attachedRobots[robotMovementData.claimedPolygon] = entity;
                 EntityManager.SetComponentData(parentGoliathData.goliath, constructData);
-                EntityManager.SetComponentData(parentGoliathData.goliath, attachedRobotsData);
+
                 commandBuffer.RemoveComponent(entity, typeof(FlyingRobotTag));
                 commandBuffer.AddComponent(entity, typeof(AttachedRobotTag));
             }

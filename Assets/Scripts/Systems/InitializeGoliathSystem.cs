@@ -19,21 +19,19 @@ public class InitializeGoliathSystem : SystemBase
         var commandBuffer = commandBufferSystem.CreateCommandBuffer();
         Entities.
             WithAll<UninitializedGoliathTag>()
-            .ForEach((Entity entity, BuildMeshData buildMeshData, AttachedRobotsData attachedRobotsData, ref ConstructData constructData) =>
+            .ForEach((Entity entity, BuildMeshData buildMeshData, ref ConstructData constructData) =>
         {
             int nrOfPolygons = GetTotalNrOfPolygons(buildMeshData.buildMesh);
+
             buildMeshData.freePolygons = new int[nrOfPolygons];
             for (int i = 0; i < nrOfPolygons; i++)
             {
                 buildMeshData.freePolygons[i] = i;
             }
-            constructData.nrOfRobotSlots = nrOfPolygons;
-            attachedRobotsData.attachedRobots = new Entity[nrOfPolygons];
-                
 
+            constructData.nrOfRobotSlots = nrOfPolygons;
             commandBuffer.SetComponent(entity, buildMeshData);
-            commandBuffer.SetComponent(entity, constructData);
-            commandBuffer.SetComponent(entity, attachedRobotsData);
+
             commandBuffer.RemoveComponent(entity, typeof(UninitializedGoliathTag));
             commandBuffer.AddComponent(entity, typeof(ConstructingGoliathTag));
         })

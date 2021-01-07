@@ -7,11 +7,11 @@ using UnityEngine;
 
 public class InitializeRobotSystem : SystemBase
 {
-    public EntityCommandBufferSystem commandBufferSystem;
+    public BeginInitializationEntityCommandBufferSystem commandBufferSystem;
     protected override void OnCreate()
     {
         base.OnCreate();
-        commandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+        commandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
     }
     protected override void OnUpdate()
     {
@@ -19,27 +19,23 @@ public class InitializeRobotSystem : SystemBase
 
         Entities.
             WithAll<UninitializedRobotTag>().
-            ForEach((Entity entity, RobotMeshData meshData, ref RobotMovementData robotMovementData, in Translation trans, in ParentGoliathData goliathData) =>
+            ForEach((Entity entity,  ref RobotMovementData robotMovementData, in Translation trans, in ParentGoliathData goliathData) =>
         {
             BuildMeshData buildMeshData = EntityManager.GetComponentObject<BuildMeshData>(goliathData.goliath);
+            float3 goliathPos = EntityManager.GetComponentData<Translation>(goliathData.goliath).Value;
+
             robotMovementData.lerpValue = 0;
             robotMovementData.startPos = trans.Value;
             robotMovementData.claimedPolygon = GetAndClaimNextFreePolygon(buildMeshData.freePolygons);
             robotMovementData.targetNormal = GetNormalOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
-            float3 goliathPos = EntityManager.GetComponentData<Translation>(goliathData.goliath).Value;
             robotMovementData.target = goliathPos + GetCenterOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
             robotMovementData.movementSpeed = 5;
 
-            meshData.renderMesh = EntityManager.GetSharedComponentData<RenderMesh>(entity);
-
-            commandBuffer.SetComponent(entity, meshData);
             commandBuffer.AddComponent(entity, new Parent { Value = goliathData.goliath });
             commandBuffer.AddComponent(entity, new LocalToParent { });
-            commandBuffer.SetComponent(entity, robotMovementData);
 
             commandBuffer.RemoveComponent(entity, typeof(UninitializedRobotTag));
             commandBuffer.AddComponent(entity, typeof(FlyingRobotTag));
-
         })
             .WithoutBurst()
             .Run();

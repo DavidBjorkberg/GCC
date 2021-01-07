@@ -5,6 +5,5 @@ public class BuildMeshData : IComponentData
 {
     public Mesh buildMesh;
     internal int[] freePolygons;
-
 }
 

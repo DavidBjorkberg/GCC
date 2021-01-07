@@ -27,7 +27,7 @@ public class FinishGoliathConstructionSystem : SystemBase
             }
             if (constructData.currentNrOfAttachedRobots > constructData.nrOfRobotSlots)
             {
-                Debug.Log("WRONG");
+                Debug.Log("Error");
             }
 
         })

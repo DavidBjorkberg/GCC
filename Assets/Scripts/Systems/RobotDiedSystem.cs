@@ -14,18 +14,15 @@ public class RobotDiedSystem : SystemBase
     protected override void OnUpdate()
     {
         var commandBuffer = commandBufferSystem.CreateCommandBuffer();
-        float deltaTime = Time.DeltaTime;
         Entities.
             WithAll<DeadRobotTag>().
-            ForEach((Entity entity, in ParentGoliathData parentGoliathData, in RobotDeathData robotDeathData) =>
+            ForEach((Entity entity, in ParentGoliathData parentGoliathData, in RobotMovementData movementData) =>
             {
-                SpawnRobotData spawnRobotData = EntityManager.GetComponentData<SpawnRobotData>(parentGoliathData.goliath);
-                spawnRobotData.nrOfAliveRobots--;
-                EntityManager.SetComponentData(parentGoliathData.goliath, spawnRobotData);
-
                 BuildMeshData buildMeshData = EntityManager.GetComponentData<BuildMeshData>(parentGoliathData.goliath);
-                buildMeshData.freePolygons[robotDeathData.claimedPolygon] = robotDeathData.claimedPolygon;
-                EntityManager.SetComponentData(parentGoliathData.goliath, buildMeshData);
+                buildMeshData.freePolygons[movementData.claimedPolygon] = movementData.claimedPolygon;
+
+                commandBuffer.SetComponent(parentGoliathData.goliath, buildMeshData);
+
                 commandBuffer.DestroyEntity(entity);
             })
             .WithoutBurst()
