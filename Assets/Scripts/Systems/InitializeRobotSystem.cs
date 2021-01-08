@@ -22,13 +22,12 @@ public class InitializeRobotSystem : SystemBase
             ForEach((Entity entity,  ref RobotMovementData robotMovementData, in Translation trans, in ParentGoliathData goliathData) =>
         {
             BuildMeshData buildMeshData = EntityManager.GetComponentObject<BuildMeshData>(goliathData.goliath);
-            float3 goliathPos = EntityManager.GetComponentData<Translation>(goliathData.goliath).Value;
 
             robotMovementData.lerpValue = 0;
             robotMovementData.startPos = trans.Value;
             robotMovementData.claimedPolygon = GetAndClaimNextFreePolygon(buildMeshData.freePolygons);
             robotMovementData.targetNormal = GetNormalOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
-            robotMovementData.target = goliathPos + GetCenterOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
+            robotMovementData.target =GetCenterOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
             robotMovementData.movementSpeed = 5;
 
             commandBuffer.AddComponent(entity, new Parent { Value = goliathData.goliath });

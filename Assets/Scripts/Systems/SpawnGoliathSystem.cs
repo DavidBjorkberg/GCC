@@ -21,9 +21,9 @@ public class SpawnGoliathSystem : SystemBase
         {
             if (spawnGoliathData.nrOfSpawnedGoliaths < spawnGoliathData.nrOfGoliathsToSpawn)
             {
-                Vector3 spawnPos = new Vector3(spawnGoliathData.nrOfSpawnedGoliaths * 5, 1.0f, 0);
+                Vector3 spawnPos = new Vector3(5 + spawnGoliathData.nrOfSpawnedGoliaths * 5, 0.0f, 0);
 
-                GameObject navGO = GameObject.Instantiate(spawnGoliathData.goliathNavPrefab, spawnPos - new Vector3(0, 1.0f, 0), quaternion.identity);
+                GameObject navGO = GameObject.Instantiate(spawnGoliathData.goliathNavPrefab, spawnPos, quaternion.identity);
 
                 GoliathNavData navData = new GoliathNavData();
                 navData.navTransform = navGO.transform;

@@ -23,7 +23,7 @@ public class GoliathMovementSystem : SystemBase
         float3 direction = new float3(1, 0, 1);
         Entities.
             WithAll<CompletedGoliathTag>().
-            ForEach((Entity entity, GoliathNavData navData, ref Translation trans) =>
+            ForEach((Entity entity, GoliathNavData navData, ref Translation trans, ref Rotation rot) =>
             {
                 if (!navData.agent.hasPath)
                 {
@@ -34,11 +34,12 @@ public class GoliathMovementSystem : SystemBase
                     randomDistance = UnityEngine.Random.Range(5, 10);
                     randomPoint = randomDir * randomDistance;
                     Vector3 point = new Vector3(randomPoint.x, 0, randomPoint.y);
-                    //navData.agent.CalculatePath(point, navData.path);
-                    //navData.agent.SetPath(navData.path);
+                    navData.agent.CalculatePath(point, navData.path);
+                    navData.agent.SetPath(navData.path);
                 }
 
                 trans.Value = navData.navTransform.position;
+                rot.Value = navData.navTransform.rotation;
             })
             .WithoutBurst()
             .Run();
