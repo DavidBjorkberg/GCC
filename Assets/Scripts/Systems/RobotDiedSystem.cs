@@ -3,6 +3,8 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Jobs;
 using UnityEngine;
+using Unity.Physics;
+using Unity.Physics.Extensions;
 public class RobotDiedSystem : SystemBase
 {
     BeginInitializationEntityCommandBufferSystem commandBufferSystem;
@@ -14,16 +16,15 @@ public class RobotDiedSystem : SystemBase
     protected override void OnUpdate()
     {
         var commandBuffer = commandBufferSystem.CreateCommandBuffer();
-        Entities.
+        Entities.WithStructuralChanges().
             WithAll<DeadRobotTag>().
-            ForEach((Entity entity, in ParentGoliathData parentGoliathData, in RobotMovementData movementData) =>
+            ForEach((Entity entity,  in DeadRobotData deadRobotData, in RobotMovementData movementData) =>
             {
-                BuildMeshData buildMeshData = EntityManager.GetComponentData<BuildMeshData>(parentGoliathData.goliath);
-                buildMeshData.freePolygons[movementData.claimedPolygon] = movementData.claimedPolygon;
+                EntityManager.AddComponent<PhysicsVelocity>(entity);
 
-                commandBuffer.SetComponent(parentGoliathData.goliath, buildMeshData);
-
-                commandBuffer.DestroyEntity(entity);
+                commandBuffer.RemoveComponent<DeadRobotTag>(entity);
+                commandBuffer.AddComponent<ApplyImpulseTag>(entity);
+                //commandBuffer.DestroyEntity(entity);
             })
             .WithoutBurst()
             .Run();

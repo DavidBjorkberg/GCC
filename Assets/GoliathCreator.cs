@@ -22,19 +22,24 @@ public class GoliathCreator : MonoBehaviour
     {
         public int index;
         public List<Vector3> vertices;
-        public bool HasMatchingVertex(Polygon other)
+        public bool isNeighbour(Polygon other)
         {
+            int nrOfMatchingVertices = 0;
             for (int i = 0; i < vertices.Count; i++)
             {
                 for (int j = 0; j < vertices.Count; j++)
                 {
+                    // "(0.5, 2.0, -0.5)" //RÄTT
+                    //"(-0.5, 1.0, -0.5)" // RÄTT
+                    //"(-0.5, 2.0, -0.5)" // RÄTT
+                    //"(-0.5, 1.0, -0.5)" // 0.5, 1.0 ,-0.5
                     if (vertices[i] == other.vertices[j])
                     {
-                        return true;
+                        nrOfMatchingVertices++;
                     }
                 }
             }
-            return false;
+            return nrOfMatchingVertices == 2;
         }
     }
     public void CreateJointLinks()
@@ -42,7 +47,6 @@ public class GoliathCreator : MonoBehaviour
         Vector3[] vertices = buildMesh.vertices;
         int[] triangles = buildMesh.triangles;
         int totalNrOfConnectedPolygons = 0;
-        int matchingNrOfPolygons = 0;
         List<List<Polygon>> connectedPolygons = new List<List<Polygon>>();
         for (int i = 0; i < triangles.Length / 6; i++)
         {
@@ -54,40 +58,73 @@ public class GoliathCreator : MonoBehaviour
         {
             Polygon newPolygon;
             newPolygon.vertices = new List<Vector3>();
-            newPolygon.vertices.Add(vertices[triangles[i]]);
-            newPolygon.vertices.Add(vertices[triangles[i + 1]]);
-            newPolygon.vertices.Add(vertices[triangles[i + 2]]);
-            newPolygon.vertices.Add(vertices[triangles[i + 5]]);
+
+            if (!newPolygon.vertices.Contains(vertices[triangles[i]]))
+            {
+                newPolygon.vertices.Add(vertices[triangles[i]]);
+            }
+            if (!newPolygon.vertices.Contains(vertices[triangles[i + 1]]))
+            {
+                newPolygon.vertices.Add(vertices[triangles[i + 1]]);
+            }
+            if (!newPolygon.vertices.Contains(vertices[triangles[i + 2]]))
+            {
+                newPolygon.vertices.Add(vertices[triangles[i + 2]]);
+            }
+            if (!newPolygon.vertices.Contains(vertices[triangles[i + 3]]))
+            {
+                newPolygon.vertices.Add(vertices[triangles[i + 3]]);
+            }
+            if (!newPolygon.vertices.Contains(vertices[triangles[i + 4]]))
+            {
+                newPolygon.vertices.Add(vertices[triangles[i + 4]]);
+            }
+            if (!newPolygon.vertices.Contains(vertices[triangles[i + 5]]))
+            {
+                newPolygon.vertices.Add(vertices[triangles[i + 5]]);
+            }
+
             newPolygon.index = Mathf.FloorToInt(i / 6);
             polygonsInMesh.Add(newPolygon);
         }
-
 
 
         for (int i = 0; i < polygonsInMesh.Count; i++)
         {
             for (int j = 0; j < polygonsInMesh.Count; j++)
             {
-                if (polygonsInMesh[i].HasMatchingVertex(polygonsInMesh[j])
-                    && !connectedPolygons[i].Contains(polygonsInMesh[j])
-                    && polygonsInMesh[i].index != polygonsInMesh[j].index)
+                bool isNeighbour = polygonsInMesh[i].isNeighbour(polygonsInMesh[j]);
+                bool alreadyAdded = connectedPolygons[i].Contains(polygonsInMesh[j]);
+                bool isNotSamePolygon = polygonsInMesh[i].index != polygonsInMesh[j].index;
+                bool isAlreadyConnected = false;
+                for (int k = 0; k < connectedPolygons[j].Count; k++)
+                {
+                    if(connectedPolygons[j][k].index == polygonsInMesh[i].index)
+                    {
+                        isAlreadyConnected = true;
+                    }
+                }
+                if (isNeighbour
+                    && !alreadyAdded
+                    && !isAlreadyConnected
+                    && isNotSamePolygon)
                 {
                     connectedPolygons[i].Add(polygonsInMesh[j]);
                     totalNrOfConnectedPolygons++;
                 }
             }
         }
-        string path = Application.dataPath + "/GoliathJointData/" + name + ".txt";
+        string path = Application.dataPath + "/GoliathNeighbourLogs/" + name + ".txt";
         if (!File.Exists(path))
         {
             File.WriteAllText(path, "");
-        }
-        for (int i = 0; i < connectedPolygons.Count; i++)
-        {
-            File.AppendAllText(path, "#\n");
-            for (int j = 0; j < connectedPolygons[i].Count; j++)
+            for (int i = 0; i < connectedPolygons.Count; i++)
             {
-                File.AppendAllText(path, connectedPolygons[i][j].index + "\n");
+                File.AppendAllText(path, "#\n");
+                for (int j = 0; j < connectedPolygons[i].Count; j++)
+                {
+                    File.AppendAllText(path, connectedPolygons[i][j].index + "\n");
+                }
             }
         }
 

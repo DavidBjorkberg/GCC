@@ -29,11 +29,19 @@ public class SpawnGoliathSystem : SystemBase
                 navData.navTransform = navGO.transform;
                 navData.agent = navGO.GetComponent<NavMeshAgent>();
                 navData.path = new NavMeshPath();
-
-                Entity instance = commandBuffer.Instantiate(spawnGoliathData.goliathPrefab);
-
-                commandBuffer.SetComponent(instance, navData);
-                commandBuffer.SetComponent(instance, new Translation { Value = spawnPos });
+                Entity instance;
+                if (spawnGoliathData.nrOfSpawnedGoliaths == 0)
+                {
+                    instance = commandBuffer.Instantiate(spawnGoliathData.goliathPrefab);
+                    commandBuffer.SetComponent(instance, navData);
+                    commandBuffer.SetComponent(instance, new Translation { Value = spawnPos });
+                }
+                else
+                {
+                    instance = commandBuffer.Instantiate(spawnGoliathData.goliathPrefab2);
+                    commandBuffer.SetComponent(instance, navData);
+                    commandBuffer.SetComponent(instance, new Translation { Value = spawnPos + new Vector3(0,0.5f,0) });
+                }
 
                 spawnGoliathData.nrOfSpawnedGoliaths++;
             }

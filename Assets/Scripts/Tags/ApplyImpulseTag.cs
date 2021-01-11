@@ -1,5 +1,5 @@
 using Unity.Entities;
 [GenerateAuthoringComponent]
-public struct DeadRobotTag: IComponentData
+public struct ApplyImpulseTag : IComponentData
 {
 }

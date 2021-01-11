@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -9068080053185774634}
   - component: {fileID: -3526229763698479481}
   m_Layer: 0
-  m_Name: Goliath 2
+  m_Name: Goliath 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5673463aa05feee4baafc32e295a7a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildMesh: {fileID: 4068373912626513877, guid: 39488285d829fe543867c761a551ba29, type: 3}
+  buildMesh: {fileID: 4068373912626513877, guid: 51ad83392845b77409270a26090c9f54, type: 3}
 --- !u!114 &7348226539256418013
 MonoBehaviour:
   m_ObjectHideFlags: 0

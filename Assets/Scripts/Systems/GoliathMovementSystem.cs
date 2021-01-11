@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Physics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Experimental.AI;
@@ -34,12 +35,12 @@ public class GoliathMovementSystem : SystemBase
                     randomDistance = UnityEngine.Random.Range(5, 10);
                     randomPoint = randomDir * randomDistance;
                     Vector3 point = new Vector3(randomPoint.x, 0, randomPoint.y);
-                    navData.agent.CalculatePath(point, navData.path);
-                    navData.agent.SetPath(navData.path);
+                 //   navData.agent.CalculatePath(point, navData.path);
+                  //  navData.agent.SetPath(navData.path);
                 }
 
-                trans.Value = navData.navTransform.position;
-                rot.Value = navData.navTransform.rotation;
+              //  trans.Value = navData.navTransform.position;
+              //  rot.Value = navData.navTransform.rotation;
             })
             .WithoutBurst()
             .Run();

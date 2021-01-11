@@ -4,7 +4,8 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Rendering;
 using UnityEngine;
-
+using Unity.Physics;
+using Unity.Physics.Extensions;
 public class InitializeRobotSystem : SystemBase
 {
     public BeginInitializationEntityCommandBufferSystem commandBufferSystem;
@@ -30,12 +31,15 @@ public class InitializeRobotSystem : SystemBase
             robotMovementData.target =GetCenterOfPolygon(robotMovementData.claimedPolygon, buildMeshData.buildMesh);
             robotMovementData.movementSpeed = 5;
 
+            FixedJoint joint = new FixedJoint();
+            EntityManager.AddComponentObject(entity, joint);
             commandBuffer.AddComponent(entity, new Parent { Value = goliathData.goliath });
             commandBuffer.AddComponent(entity, new LocalToParent { });
 
             commandBuffer.RemoveComponent(entity, typeof(UninitializedRobotTag));
             commandBuffer.AddComponent(entity, typeof(FlyingRobotTag));
         })
+            .WithStructuralChanges()
             .WithoutBurst()
             .Run();
     }

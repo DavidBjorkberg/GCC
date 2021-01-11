@@ -16,10 +16,11 @@ public class InitializeGoliathSystem : SystemBase
     }
     protected override void OnUpdate()
     {
+        
         var commandBuffer = commandBufferSystem.CreateCommandBuffer();
         Entities.
             WithAll<UninitializedGoliathTag>()
-            .ForEach((Entity entity, BuildMeshData buildMeshData, ref ConstructData constructData) =>
+            .ForEach((Entity entity, BuildMeshData buildMeshData, AttachedRobotsData attachedRobotsData, ref ConstructData constructData) =>
         {
             int nrOfPolygons = GetTotalNrOfPolygons(buildMeshData.buildMesh);
 
@@ -28,7 +29,7 @@ public class InitializeGoliathSystem : SystemBase
             {
                 buildMeshData.freePolygons[i] = i;
             }
-
+            attachedRobotsData.attachedRobots = new Entity[nrOfPolygons];
             constructData.nrOfRobotSlots = nrOfPolygons;
             commandBuffer.SetComponent(entity, buildMeshData);
 
